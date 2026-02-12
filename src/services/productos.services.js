@@ -1,16 +1,16 @@
 import { pool } from "../db.js";
 
 export const getProductsService = async () => {
-  const [products] = await pool.query("SELECT * FROM PRODUCTOS");
+  const [products] = await pool.query("SELECT * FROM PRODUCTOS WHERE activo = 1");
   return products;
 };
 
 export const getProductService = async (idProducto) => {
   const [product] = await pool.query(
     "SELECT * FROM PRODUCTOS WHERE id_producto = ?",
-    idProducto
+    [idProducto]
   );
-  return product;
+  return product[0];
 };
 
 export const createProductService = async (newProduct) => {
@@ -23,6 +23,33 @@ export const createProductService = async (newProduct) => {
 
   return {
     id_producto: res.insertId,
-    ...newProduct
+    ...newProduct,
   };
+};
+
+export const updateProductService = async (id, data) => {
+  const fields = Object.keys(data)
+    .map((field) => `${field} = ?`)
+    .join(", ");
+
+  const values = Object.values(data);
+
+  if (!fields) {
+    throw new Error("No hay campos para actualizar");
+  }
+
+  const [result] = await pool.query(
+    `UPDATE productos SET ${fields} WHERE id_producto = ?`,
+    [...values, id]
+  );
+
+  return result.affectedRows;
+};
+
+export const deleteProductService = async (id) => {
+  const [result] = await pool.query(
+    "UPDATE PRODUCTOS SET activo = 0 where id_producto = ?",
+    [id]
+  );
+  return result.affectedRows;
 };
