@@ -7,7 +7,7 @@ export const createSaleFullServices = async ({
 }) => {
   try {
     const [caja] = await pool.query(
-      "SELECT estado FROM CAJA WHERE id_caja = ?",
+      "SELECT estado FROM caja WHERE id_caja = ?",
       [id_caja],
     );
     if (!caja.length || caja[0].estado !== "ABIERTA") {
@@ -23,7 +23,7 @@ export const createSaleFullServices = async ({
       throw { status: 400, message: "No hay productos en la venta" };
 
     const [products] = await pool.query(
-      "SELECT id_producto, nombre, precio, stock, activo FROM PRODUCTOS WHERE id_producto IN (?)",
+      "SELECT id_producto, nombre, precio, stock, activo FROM productos WHERE id_producto IN (?)",
       [idsProducts],
     );
 
@@ -71,7 +71,7 @@ export const createSaleFullServices = async ({
     }
 
     const [ventaResult] = await pool.query(
-      "INSERT INTO VENTAS (fecha, total, metodo_pago, id_caja) VALUES (NOW(), ?, ?, ?)",
+      "INSERT INTO ventas (fecha, total, metodo_pago, id_caja) VALUES (NOW(), ?, ?, ?)",
       [totalVenta, metodo_pago, id_caja],
     );
 
@@ -108,7 +108,7 @@ export const createSaleFullServices = async ({
 };
 
 export const getSalesServices = async () => {
-  const [sales] = await pool.query("SELECT * FROM VENTAS ORDER BY fecha DESC");
+  const [sales] = await pool.query("SELECT * FROM ventas ORDER BY fecha DESC");
   return sales;
 };
 
@@ -120,8 +120,8 @@ export const getProductSalesServices = async (idVenta) => {
       dv.cantidad,
       dv.precio_unitario,
       p.nombre AS nombre_producto
-    FROM DETALLE_VENTAS dv
-    INNER JOIN PRODUCTOS p ON dv.id_producto = p.id_producto
+    FROM detalle_ventas dv
+    INNER JOIN productos p ON dv.id_producto = p.id_producto
     WHERE dv.id_venta = ?
   `;
 
@@ -136,7 +136,7 @@ export const getProductSalesServices = async (idVenta) => {
 
 export const annulSaleService = async (idVenta) => {
   // Primero verificamos si ya está anulada
-  const [venta] = await pool.query("SELECT * FROM VENTAS WHERE id_venta = ?", [
+  const [venta] = await pool.query("SELECT * FROM ventas WHERE id_venta = ?", [
     idVenta,
   ]);
 
@@ -145,7 +145,7 @@ export const annulSaleService = async (idVenta) => {
     throw { status: 400, message: "La venta ya está anulada" };
 
   const [result] = await pool.query(
-    "UPDATE VENTAS SET anulada = 1 WHERE id_venta = ?",
+    "UPDATE ventas SET anulada = 1 WHERE id_venta = ?",
     [idVenta],
   );
   return result.affectedRows;

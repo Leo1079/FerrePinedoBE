@@ -1,13 +1,13 @@
 import { pool } from "../db.js";
 
 export const getProductsService = async () => {
-  const [products] = await pool.query("SELECT * FROM PRODUCTOS");
+  const [products] = await pool.query("SELECT * FROM productos");
   return products;
 };
 
 export const getProductService = async (idProducto) => {
   const [product] = await pool.query(
-    "SELECT * FROM PRODUCTOS WHERE id_producto = ?",
+    "SELECT * FROM productos WHERE id_producto = ?",
     [idProducto],
   );
   return product[0];
@@ -17,7 +17,7 @@ export const createProductService = async (newProduct) => {
   const { nombre, precio, unidad_medida, stock, activo } = newProduct;
 
   const [res] = await pool.query(
-    "INSERT INTO PRODUCTOS (nombre,precio,unidad_medida,stock,activo) VALUES (?,?,?,?,?)",
+    "INSERT INTO productos (nombre,precio,unidad_medida,stock,activo) VALUES (?,?,?,?,?)",
     [nombre, precio, unidad_medida, stock, activo],
   );
 
@@ -39,7 +39,7 @@ export const updateProductService = async (id, data) => {
   }
 
   const [result] = await pool.query(
-    `UPDATE PRODUCTOS SET ${fields} WHERE id_producto = ?`,
+    `UPDATE productos SET ${fields} WHERE id_producto = ?`,
     [...values, id],
   );
 
@@ -48,7 +48,7 @@ export const updateProductService = async (id, data) => {
 
 export const activateProductService = async (id) => {
   const [result] = await pool.query(
-    "UPDATE PRODUCTOS SET activo = 1 where id_producto = ?",
+    "UPDATE productos SET activo = 1 where id_producto = ?",
     [id],
   );
   return result.affectedRows;
@@ -57,7 +57,7 @@ export const activateProductService = async (id) => {
 
 export const deleteProductService = async (id) => {
   const [result] = await pool.query(
-    "UPDATE PRODUCTOS SET activo = 0 where id_producto = ?",
+    "UPDATE productos SET activo = 0 where id_producto = ?",
     [id],
   );
   return result.affectedRows;
