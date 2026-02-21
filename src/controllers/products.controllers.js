@@ -1,4 +1,5 @@
 import {
+  activateProductService,
   createProductService,
   deleteProductService,
   getProductService,
@@ -48,7 +49,6 @@ export const createProductController = async (req, res, next) => {
 export const updateProductController = async (req, res, next) => {
   try {
     const { id } = req.params;
-
     const updated = await updateProductService(id, req.body);
 
     if (!updated) {
@@ -57,7 +57,7 @@ export const updateProductController = async (req, res, next) => {
         null,
         "Producto no encontrado o sin cambios",
         false,
-        404
+        404,
       );
     }
     const updatedProduct = await getProductService(id);
@@ -68,6 +68,22 @@ export const updateProductController = async (req, res, next) => {
   }
 };
 
+// Activar producto (soft delete)
+export const activateProductController = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const activated = await activateProductService(id);
+
+    if (!activated) {
+      return sendResponse(res, null, "Producto no encontrado  o Producto ya activado", false, 404);
+    }
+
+    sendResponse(res, null, "Producto activado");
+  } catch (err) {
+    next(err);
+  }
+};
 // Eliminar producto (soft delete)
 export const deleteProductController = async (req, res, next) => {
   try {
@@ -84,3 +100,5 @@ export const deleteProductController = async (req, res, next) => {
     next(err);
   }
 };
+
+
